@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const User = require('../models/user');
 
 function readAllUsers(req, res) {
@@ -8,7 +9,6 @@ function readAllUsers(req, res) {
 
 function createUser(req, res) {
   const userData = req.body;
-  console.log(userData);
 
   return User.create(userData)
     .then((user) => res.status(201).send(user))
@@ -22,19 +22,20 @@ function createUser(req, res) {
 
 function readUser(req, res) {
   const userId = req.user._id;
-  return User.findById(userId)
-    .then((user) => {
-      if (!user) {
-        return res.status(404).send({ message: 'User not found' });
-      }
-      return res.status(200).send(user);
-    })
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        return res.status(400).send({ message: 'Invalid ID' });
-      }
-      return res.status(500).send({ message: 'Server Error' });
-    });
+  if (!mongoose.Types.ObjectId.isValid(userId)) {
+    return res.status(400).send({ message: 'Invalid user ID' });
+  }
+  if (userId) {
+    return User.findById(userId)
+      .then((user) => res.status(200).send(user))
+      .catch((err) => {
+        if (err.name === 'CastError') {
+          return res.status(404).send({ message: 'Invalid user ID' });
+        }
+        return res.status(500).send({ message: 'Server Error' });
+      });
+  }
+  return res.status(404).send({ message: 'User not found' });
 }
 
 function updateUser(req, res) {
