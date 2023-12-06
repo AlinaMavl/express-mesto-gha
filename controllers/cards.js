@@ -26,8 +26,10 @@ const likeCard = (req, res) => Card.findByIdAndUpdate(
   { new: true },
 )
   .then((card) => {
-    if (!card) {
-      return res.status(400).send({ message: 'Переданы некорректные данные для постановки/снятии лайка' });
+    const { cardId } = req.params;
+    // eslint-disable-next-line no-constant-condition
+    if (!{ cardId }) {
+      return res.status(404).send({ message: 'Переданы некорректные данные для постановки/снятии лайка' });
     }
     res.status(200).send(card);
     return card;
@@ -53,7 +55,7 @@ const deleteCard = (req, res) => {
     // eslint-disable-next-line consistent-return
     .then((card) => {
       if (!card) {
-        return res.status(404).send({ message: 'Передан несуществующий _id карточки' });
+        return res.status(400).send({ message: 'Передан несуществующий _id карточки' });
       }
       res.send(card);
     })

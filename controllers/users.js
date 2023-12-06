@@ -14,7 +14,7 @@ function createUser(req, res) {
     .then((user) => res.status(201).send(user))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        return res.status(400).send({ message: err.message });
+        return res.status(400).send({ message: 'User not created' });
       }
       return res.status(500).send({ message: 'Server Error' });
     });
