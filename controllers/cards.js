@@ -22,8 +22,8 @@ const createCard = (req, res) => {
 };
 
 const likeCard = (req, res) => {
-  const cardId = req.params._id;
-  if (!mongoose.Types.ObjectId.isValid(cardId)) {
+  const cardID = req.params.cardId;
+  if (!mongoose.Types.ObjectId.isValid(cardID)) {
     return res.status(400).send({ message: 'Некорректный _id карточки' });
   }
   return Card.findByIdAndUpdate(
@@ -32,8 +32,8 @@ const likeCard = (req, res) => {
     { new: true },
   )
     .then((card) => {
-      if (!cardId) {
-        return res.status(404).send({ message: 'Переданы некорректные данные для постановки/снятии лайка' });
+      if (!card) {
+        return res.status(404).send({ message: 'Карта на найдена' });
       }
       res.status(200).send(card);
       return card;
@@ -42,8 +42,8 @@ const likeCard = (req, res) => {
 };
 
 const dislikeCard = (req, res) => {
-  const cardId = req.params._id;
-  if (!mongoose.Types.ObjectId.isValid(cardId)) {
+  const cardID = req.params.cardId;
+  if (!mongoose.Types.ObjectId.isValid(cardID)) {
     return res.status(400).send({ message: 'Некорректный _id карточки' });
   }
   return Card.findByIdAndUpdate(
@@ -53,7 +53,7 @@ const dislikeCard = (req, res) => {
   )
     .then((card) => {
       if (!card) {
-        return res.status(404).send({ message: 'Переданы некорректные данные для постановки/снятии лайка' });
+        return res.status(404).send({ message: 'Карта на найдена' });
       }
       res.status(200).send(card);
       return card;
@@ -62,13 +62,16 @@ const dislikeCard = (req, res) => {
 };
 
 const deleteCard = (req, res) => {
-  Card.findByIdAndDelete(req.params.cardId)
-    // eslint-disable-next-line consistent-return
+  const cardID = req.params.cardId;
+  if (!mongoose.Types.ObjectId.isValid(cardID)) {
+    return res.status(400).send({ message: 'Некорректный _id карточки' });
+  }
+  return Card.findByIdAndDelete(cardID)
     .then((card) => {
       if (!card) {
-        return res.status(400).send({ message: 'Карточка не найдена' });
+        return res.status(404).send({ message: 'Карточка не найдена' });
       }
-      res.status(200).send();
+      return res.status(200).send(card);
     })
     .catch(() => res.status(500).send({ message: 'Ошибка по умолчанию' }));
 };

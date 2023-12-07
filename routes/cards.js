@@ -3,7 +3,7 @@ const cardController = require('../controllers/cards');
 
 router.get('/', cardController.readAllCards);
 router.post('/', cardController.createCard);
-router.get('/:cardId', cardController.deleteCard);
+router.delete('/:cardId', cardController.deleteCard);
 router.put('/:cardId/likes', cardController.likeCard);
 router.delete('/:cardId/likes', cardController.dislikeCard);
 

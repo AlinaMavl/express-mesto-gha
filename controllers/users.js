@@ -21,21 +21,23 @@ function createUser(req, res) {
 }
 
 function readUser(req, res) {
-  const userId = req.user._id;
-  if (!mongoose.Types.ObjectId.isValid(userId)) {
+  const userID = req.params.userId;
+  if (!mongoose.Types.ObjectId.isValid(userID)) {
     return res.status(400).send({ message: 'Invalid user ID' });
   }
-  if (userId) {
-    return User.findById(userId)
-      .then((user) => res.status(200).send(user))
-      .catch((err) => {
-        if (err.name === 'CastError') {
-          return res.status(404).send({ message: 'Invalid user ID' });
-        }
-        return res.status(500).send({ message: 'Server Error' });
-      });
-  }
-  return res.status(404).send({ message: 'User not found' });
+  return User.findById(userID)
+    .then((user) => {
+      if (!user) {
+        return res.status(404).send({ message: 'User not found' });
+      }
+      return res.status(200).send(user);
+    })
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        return res.status(404).send({ message: 'Invalid user ID' });
+      }
+      return res.status(500).send({ message: 'Server Error' });
+    });
 }
 
 function updateUser(req, res) {
